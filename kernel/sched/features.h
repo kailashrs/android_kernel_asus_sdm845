@@ -73,6 +73,7 @@ SCHED_FEAT(FORCE_SD_OVERLAP, false)
 SCHED_FEAT(RT_RUNTIME_SHARE, true)
 SCHED_FEAT(LB_MIN, false)
 SCHED_FEAT(ATTACH_AGE_LOAD, true)
+SCHED_FEAT(WA_IDLE, true)
 
 /*
  * Energy aware scheduling. Use platform energy model to guide scheduling
