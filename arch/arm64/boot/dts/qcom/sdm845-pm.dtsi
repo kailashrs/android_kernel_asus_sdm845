@@ -75,7 +75,7 @@
 					qcom,latency-us = <461>;
 					qcom,ss-power = <100>;
 					qcom,energy-overhead = <400000>;
-					qcom,time-overhead = <1200>;
+					qcom,time-overhead = <500>;
 					qcom,is-reset;
 					qcom,use-broadcast-timer;
 				};
@@ -87,7 +87,7 @@
 					qcom,latency-us = <531>;
 					qcom,ss-power = <73>;
 					qcom,energy-overhead = <500000>;
-					qcom,time-overhead = <1200>;
+					qcom,time-overhead = <600>;
 					qcom,is-reset;
 					qcom,use-broadcast-timer;
 				};
