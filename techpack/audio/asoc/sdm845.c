@@ -4753,7 +4753,7 @@ static int msm_get_pinctrl(struct platform_device *pdev)
 		pr_err("%s: could not get mi2s_active pinstate\n", __func__);
 		goto err;
 	}
-	
+
 	//remove tdm pinctrl code for Quat mi2s pinctrl info register suscess
 	/*pinctrl_info->tdm_disable = pinctrl_lookup_state(pinctrl,
 						"quat-tdm-sleep");
@@ -5046,7 +5046,7 @@ static int msm_mi2s_snd_startup(struct snd_pcm_substream *substream)
 			pr_err("%s: MI2S TLMM pinctrl set failed with %d\n",
 				__func__, ret_pinctrl);
 	}
-	
+
 	/*
 	 * Muxtex protection in case the same MI2S
 	 * interface using for both TX and RX  so
@@ -5737,7 +5737,7 @@ static struct snd_soc_dai_link msm_common_dai_links[] = {
 		.ignore_pmdown_time = 1,
 		.codec_dai_name = "snd-soc-dummy-dai",
 		.codec_name = "snd-soc-dummy",
-	}, 
+	},
 	//for nxp AMP---
 };
 
@@ -7065,7 +7065,6 @@ static struct snd_soc_card *populate_snd_card_dailinks(struct device *dev)
 		len_3 = len_2 + ARRAY_SIZE(msm_common_misc_fe_dai_links);
 		len_4 = len_3 + ARRAY_SIZE(msm_common_be_dai_links);
 		total_links = len_4 + ARRAY_SIZE(msm_tavil_be_dai_links);
-		if (g_asus_hw_id > 3 ) {
 			memcpy(msm_tavil_snd_card_dai_links_er2,
 				   msm_common_dai_links,
 				   sizeof(msm_common_dai_links));
@@ -7081,88 +7080,42 @@ static struct snd_soc_card *populate_snd_card_dailinks(struct device *dev)
 			memcpy(msm_tavil_snd_card_dai_links_er2 + len_4,
 				   msm_tavil_be_dai_links,
 				   sizeof(msm_tavil_be_dai_links));
-		} else {
-			memcpy(msm_tavil_snd_card_dai_links,
-				   msm_common_dai_links,
-				   sizeof(msm_common_dai_links));
-			memcpy(msm_tavil_snd_card_dai_links + len_1,
-				   msm_tavil_fe_dai_links,
-				   sizeof(msm_tavil_fe_dai_links));
-			memcpy(msm_tavil_snd_card_dai_links + len_2,
-				   msm_common_misc_fe_dai_links,
-				   sizeof(msm_common_misc_fe_dai_links));
-			memcpy(msm_tavil_snd_card_dai_links + len_3,
-				   msm_common_be_dai_links,
-				   sizeof(msm_common_be_dai_links));
-			memcpy(msm_tavil_snd_card_dai_links + len_4,
-				   msm_tavil_be_dai_links,
-				   sizeof(msm_tavil_be_dai_links));
-		   }
 
 		if (of_property_read_bool(dev->of_node, "qcom,wcn-btfm")) {
 			dev_dbg(dev, "%s(): WCN BTFM support present\n",
 				__func__);
-			if (g_asus_hw_id > 3 ) {
 				memcpy(msm_tavil_snd_card_dai_links_er2 + total_links,
 					   msm_wcn_be_dai_links,
 					   sizeof(msm_wcn_be_dai_links));
-			} else {
-				memcpy(msm_tavil_snd_card_dai_links + total_links,
-					   msm_wcn_be_dai_links,
-					   sizeof(msm_wcn_be_dai_links));
-		   }
-			total_links += ARRAY_SIZE(msm_wcn_be_dai_links);
+				total_links += ARRAY_SIZE(msm_wcn_be_dai_links);
 		}
 
 		if (of_property_read_bool(dev->of_node,
 					  "qcom,ext-disp-audio-rx")) {
 			dev_dbg(dev, "%s(): ext disp audio support present\n",
 				__func__);
-			if (g_asus_hw_id > 3) {
 				memcpy(msm_tavil_snd_card_dai_links_er2 + total_links,
 					   ext_disp_be_dai_link,
 					   sizeof(ext_disp_be_dai_link));
-			} else {
-				memcpy(msm_tavil_snd_card_dai_links + total_links,
-					   ext_disp_be_dai_link,
-					   sizeof(ext_disp_be_dai_link));
-			}
-			total_links += ARRAY_SIZE(ext_disp_be_dai_link);
+				total_links += ARRAY_SIZE(ext_disp_be_dai_link);
 		}
 		if (of_property_read_bool(dev->of_node,
 					  "qcom,mi2s-audio-intf")) {
 			//for nxp AMP +++
-			if (g_asus_hw_id > 3 ) {
 				memcpy(msm_tavil_snd_card_dai_links_er2 + total_links,
 					   msm_mi2s_be_dai_links_er2,
 					   sizeof(msm_mi2s_be_dai_links_er2));
 				total_links += ARRAY_SIZE(msm_mi2s_be_dai_links_er2);
-			} else {
-				memcpy(msm_tavil_snd_card_dai_links + total_links,
-					   msm_mi2s_be_dai_links,
-					   sizeof(msm_mi2s_be_dai_links));
-				total_links += ARRAY_SIZE(msm_mi2s_be_dai_links);
-			}
 			//for nxp AMP ---
 		}
 		if (of_property_read_bool(dev->of_node,
 					  "qcom,auxpcm-audio-intf")) {
-			if (g_asus_hw_id > 3) {
 				memcpy(msm_tavil_snd_card_dai_links_er2 + total_links,
 				msm_auxpcm_be_dai_links,
 				sizeof(msm_auxpcm_be_dai_links));
-			} else {
-				memcpy(msm_tavil_snd_card_dai_links + total_links,
-				msm_auxpcm_be_dai_links,
-				sizeof(msm_auxpcm_be_dai_links));
-			}
-			total_links += ARRAY_SIZE(msm_auxpcm_be_dai_links);
+				total_links += ARRAY_SIZE(msm_auxpcm_be_dai_links);
 		}
-		if (g_asus_hw_id > 3) {
 			dailink = msm_tavil_snd_card_dai_links_er2;
-		} else {
-			dailink = msm_tavil_snd_card_dai_links;
-		}
 	} else if (!strcmp(match->data, "stub_codec")) {
 		card = &snd_soc_card_stub_msm;
 		len_1 = ARRAY_SIZE(msm_stub_fe_dai_links);
