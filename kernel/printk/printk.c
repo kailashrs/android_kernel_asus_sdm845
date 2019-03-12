@@ -2234,7 +2234,6 @@ void suspend_console(void)
 	nSuspendInProgress = 1;
 	if (!console_suspend_enabled)
 		return;
-	printk("Suspending console(s) (use no_console_suspend to debug)\n");
 	console_lock();
 	console_suspended = 1;
 	up_console_sem();
