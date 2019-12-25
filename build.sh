@@ -9,6 +9,6 @@ cd AnyKernel3
 rm zImage
 rm dtbo.img
 rm kangbang.zip
-python2 /home/kailashrs/5z/mkdtboimg.py create dtbo.img android_kernel_asus_sdm845/out/arch/arm64/boot/dts/qcom/*.dtbo
+python2 /home/kailashrs/5z/mkdtboimg.py create dtbo.img /home/kailashrs/5z/android_kernel_asus_sdm845/out/arch/arm64/boot/dts/qcom/*.dtbo
 cp /home/kailashrs/5z/android_kernel_asus_sdm845/out/arch/arm64/boot/Image.gz-dtb zImage
 zip -r kangbang.zip *
