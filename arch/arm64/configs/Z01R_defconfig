@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.9.212 Kernel Configuration
+# Linux/arm64 4.9.213 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -2781,6 +2781,7 @@ CONFIG_DRM_KMS_HELPER=y
 CONFIG_DRM_MSM=y
 # CONFIG_DRM_MSM_REGISTER_LOGGING is not set
 # CONFIG_DRM_MSM_HDMI_HDCP is not set
+# CONFIG_DRM_MSM_DP is not set
 # CONFIG_DRM_MSM_HDMI is not set
 # CONFIG_DRM_MSM_DSI is not set
 CONFIG_DRM_MSM_DSI_STAGING=y
