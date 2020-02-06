@@ -430,7 +430,7 @@ void fts_irq_disable(void)
 *****************************************************************************/
 void fts_irq_enable(void)
 {
-    unsigned long irqflags = 0;
+    unsigned long irqflags = IRQF_PERF_CRITICAL;
 
     FTS_FUNC_ENTER();
     spin_lock_irqsave(&fts_data->irq_lock, irqflags);
