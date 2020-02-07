@@ -7478,7 +7478,9 @@ task_is_boosted(struct task_struct *p) {
 static inline bool
 cpu_is_in_target_set(struct task_struct *p, int cpu)
 {
-	int first_cpu = start_cpu(task_is_boosted(p));
+	bool boosted = task_is_boosted(p);
+
+	int first_cpu = start_cpu(p, boosted, NULL);
 	int next_usable_cpu = cpumask_next(first_cpu - 1, tsk_cpus_allowed(p));
 	return cpu >= next_usable_cpu || next_usable_cpu >= nr_cpu_ids;
 }
@@ -7741,7 +7743,6 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
 		rcu_read_unlock();
 		return new_cpu;
 	}
-
 
 	rcu_read_lock();
 	for_each_domain(cpu, tmp) {
