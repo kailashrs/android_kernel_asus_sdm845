@@ -315,6 +315,9 @@ static int smb2_parse_dt(struct smb2 *chip)
 	chg->disable_stat_sw_override = of_property_read_bool(node,
 					"qcom,disable-stat-sw-override");
 
+	chg->fcc_stepper_enable = of_property_read_bool(node,
+					"qcom,fcc-stepping-enable");
+
 	return 0;
 }
 
@@ -380,7 +383,7 @@ static int smb2_usb_get_prop(struct power_supply *psy,
 		if (chg->real_charger_type == POWER_SUPPLY_TYPE_UNKNOWN)
 			val->intval = 0;
 		if (val->intval == 0 && chg->asus_chg->asus_adapter_detecting_flag){
-			val->intval = 1;		
+			val->intval = 1;
 			CHG_DBG("force reporting online due to under AC detecting flow\n");
 		}
 		break;
@@ -990,6 +993,7 @@ static enum power_supply_property smb2_batt_props[] = {
 	POWER_SUPPLY_PROP_CHARGE_FULL,
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
 	POWER_SUPPLY_PROP_STATUS_QCOM,
+	POWER_SUPPLY_PROP_FCC_STEPPER_ENABLE,
 };
 
 static int smb2_batt_get_prop(struct power_supply *psy,
@@ -1112,6 +1116,9 @@ static int smb2_batt_get_prop(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 	case POWER_SUPPLY_PROP_TEMP:
 		rc = smblib_get_prop_from_bms(chg, psp, val);
+		break;
+	case POWER_SUPPLY_PROP_FCC_STEPPER_ENABLE:
+		val->intval = chg->fcc_stepper_enable;
 		break;
 	default:
 		pr_err("batt power supply prop %d not supported\n", psp);
@@ -2343,7 +2350,7 @@ void set_otg_current_to_1p5A_needrestore(int flag)
 	cancel_delayed_work(&chg->asus_chg->asus_handle_otg_insertion_work);//cancel delay work
 	//ASUS BSP ADD for 1.5A otg output at begin ---
 	rc = smblib_masked_write(chg, OTG_CURRENT_LIMIT_CFG_REG,
-					OTG_CURRENT_LIMIT_MASK, 0x05);// init 1.5A 
+					OTG_CURRENT_LIMIT_MASK, 0x05);// init 1.5A
 	if (rc < 0) {
 			dev_err(chg->dev, "%s Couldn't set otg icl rc=%d\n",__func__, rc);
 	}
