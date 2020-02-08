@@ -365,6 +365,16 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 			return -EINVAL;
 		}
 
+		if (rtac_make_afe_callback(data->payload,
+					   data->payload_size))
+			return 0;
+
+		if (data->payload_size < 3 * sizeof(uint32_t)) {
+			pr_err("%s: Error: size %d is less than expected\n",
+				__func__, data->payload_size);
+			return -EINVAL;
+		}
+
 		if (payload[2] == AFE_PARAM_ID_DEV_TIMING_STATS) {
 			av_dev_drift_afe_cb_handler(data->payload,
 						    data->payload_size);
@@ -401,6 +411,11 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 
 		payload = data->payload;
 		if (data->opcode == APR_BASIC_RSP_RESULT) {
+			if (data->payload_size < (2 * sizeof(uint32_t))) {
+				pr_err("%s: Error: size %d is less than expected\n",
+					__func__, data->payload_size);
+				return -EINVAL;
+			}
 			pr_debug("%s:opcode = 0x%x cmd = 0x%x status = 0x%x token=%d\n",
 				__func__, data->opcode,
 				payload[0], payload[1], data->token);
@@ -7627,14 +7642,14 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 	}
 
 	pdata = (struct afe_port_param_data_v2 *)tfa_cal->cal_data.kvaddr;
-       
+
 	pdata->module_id = 0x1000B911;
 	pdata->param_size = cmd_size;
-       
+
 	/* Copy buffer to out-of-band payload */
 	memcpy((void *)(pdata + 1), buf, cmd_size);
 	memset(apr_msg, 0x00, sizeof(apr_msg));
-       
+
 	if (!bRead) {
 		struct afe_port_cmd_set_param_v2 *afe_set_apr_msg;
 
@@ -7661,7 +7676,7 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 
 		pdata->param_id = 0x1000B922;
 		opcode = AFE_PORT_CMD_GET_PARAM_V2;
-               
+
 		/* Copy buffer to in-band payload */
 		afe_get_apr_msg = (struct afe_port_cmd_get_param_v2 *)
 					((u8 *) apr_msg + sizeof(struct apr_hdr));
@@ -7676,7 +7691,7 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 		afe_get_apr_msg->payload_address_msw =
 			msm_audio_populate_upper_32_bits(tfa_cal->cal_data.paddr);
 		afe_get_apr_msg->mem_map_handle = tfa_cal->map_data.map_handle;
-               
+
 		apr_msg_size = sizeof(struct apr_hdr) +
 				sizeof(struct afe_port_cmd_get_param_v2);
 	}
@@ -7707,7 +7722,7 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 	}else {
 		result = 0;
 	}
-       
+
 	if (atomic_read(&this_afe.status) > 0) {
 		pr_err("%s: config cmd failed [%s]\n",
 			__func__, adsp_err_get_err_str(
@@ -7730,8 +7745,8 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 		}
 
 		memcpy(buf, (void *) (get_resp + 1), get_resp->param_size);
-	} 
-       
+	}
+
 err:
 	return result;
 }
@@ -7740,7 +7755,7 @@ EXPORT_SYMBOL(send_tfa_cal_apr);
 int send_tfa_cal_in_band(void *buf, int cmd_size)
 {
 	int32_t port_id = AFE_PORT_ID_QUATERNARY_MI2S_RX;//modify follow EE design
-	union afe_spkr_prot_config prot_config;	
+	union afe_spkr_prot_config prot_config;
 
 	if (cmd_size > sizeof(prot_config))
 		return -EINVAL;
