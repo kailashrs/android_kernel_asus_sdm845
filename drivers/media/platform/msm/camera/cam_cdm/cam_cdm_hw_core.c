@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -509,7 +509,7 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 
 		if (!rc) {
 			CAM_DBG(CAM_CDM,
-				"write BL success for cnt=%d with tag=%d total_cnt",
+				"write BL success for cnt=%d with tag=%d total_cnt=%d",
 				i, core->bl_tag, req->data->cmd_arrary_count);
 
 			CAM_DBG(CAM_CDM, "Now commit the BL");
