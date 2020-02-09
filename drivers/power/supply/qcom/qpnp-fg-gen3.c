@@ -4868,7 +4868,8 @@ static int fg_hw_init(struct fg_chip *chip)
 			return rc;
 		}
 	}
-// ASUS_BSP +++
+
+	// ASUS_BSP +++
 	if (chip->dt.ki_coeff_cutoff_soc != -EINVAL) {
 		fg_encode(chip->sp, FG_SRAM_KI_COEFF_CUTOFF_SOC,
 			chip->dt.ki_coeff_cutoff_soc, &val);
@@ -4883,8 +4884,6 @@ static int fg_hw_init(struct fg_chip *chip)
 		}
 	}
 	// ASUS_BSP ---
-	return 0;
-	}
 
 	if (chip->dt.use_esr_sw) {
 		/* Enable ESR extraction explicitly */
