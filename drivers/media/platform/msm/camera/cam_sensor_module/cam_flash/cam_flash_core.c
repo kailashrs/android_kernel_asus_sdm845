@@ -18,7 +18,7 @@
 
 #include "asus_flash.h"
 
-static int cam_flash_prepare(struct cam_flash_ctrl *flash_ctrl,
+int cam_flash_prepare(struct cam_flash_ctrl *flash_ctrl,
 	bool regulator_enable)
 {
 	int rc = 0;
