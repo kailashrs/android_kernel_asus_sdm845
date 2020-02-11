@@ -1,4 +1,4 @@
-make clean
+make mrproper
 export ARCH="arm64"
 export PATH="/usr/lib/ccache/bin:$PATH"
 export CROSS_COMPILE="ccache /home/kailashrs/5z/aarch64-elf-gcc/bin/aarch64-elf-"
