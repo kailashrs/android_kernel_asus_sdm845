@@ -351,20 +351,6 @@ int asus_set_prop_pd_qc_state(struct smb_charger *chg,
 	return 0;
 }
 
-extern u32 asus_rpm_count[2];
-extern uint32_t asus_rpmh_counts[5];
-static void asus_dump_sleep_count(void) {
-	if(asus_rpm_count[0] == 0xffffffff || asus_rpmh_counts[1] == 0xffffffff){
-		printk("%s:rpm or rpmh count is not init!\n", __func__);
-		return ;
-	}
-
-	ASUSEvtlog("aosd=0x%x;cxsd=0x%x;APSS=0x%x;MPSS=0x%x;ADSP=0x%x;CDSP=0x%x;SLPI=0x%x",
-		asus_rpm_count[0], asus_rpm_count[1], asus_rpmh_counts[0],
-		asus_rpmh_counts[1], asus_rpmh_counts[2],
-		asus_rpmh_counts[3], asus_rpmh_counts[4]);
-}
-
 static char *dual_charge_type_str[]={
 		[ASUS_2A]="ASUS_2A",
 		[TYPEC_3A]="TYPEC_3A",
@@ -374,7 +360,7 @@ static char *dual_charge_type_str[]={
 extern void asp1690_enable(bool enable);
 static char *asus_charging_type_str[]={
 	[PD]	="PD",
-	[HVDCP_ASUS_200K_2A]	="HVDCP_ASUS_200K_2A",	
+	[HVDCP_ASUS_200K_2A]	="HVDCP_ASUS_200K_2A",
 	[HVDCP_OTHERS_1A]	="HVDCP_OTHERS_1A",
 	[HVDCP_OTHERS_1P5A]	="HVDCP_OTHERS_1P5A",
 	[HVDCP_OTHERS_PB_1A]	="HVDCP_OTHERS_PB_1A",
@@ -463,19 +449,6 @@ static int asus_print_all(void)
 	printk(KERN_INFO "%s", battInfo);
 	if(chip_dev->chg.asus_capacity != batt_info.capacity){
 		chip_dev->chg.asus_capacity = batt_info.capacity;
-		ASUSEvtlog("[BAT][Ser]report Capacity==>%d,FCC:%d,BMS:%d,V:%d,Cur:%d,Temp:%s%d.%dC,Cable:%d(%s),Status:%s\n", 
-			batt_info.capacity,
-			batt_info.fcc,
-			batt_info.capacity,
-			batt_info.voltage_now,
-			batt_info.current_now,
-			batt_info.temperature_negative_sign,
-			batt_info.temperature10,
-			batt_info.temperature,
-			chip_dev->chg.asus_chg->asus_charging_type,
-			asus_charging_type_str[chip_dev->chg.asus_chg->asus_charging_type],
-			batt_status_str[batt_info.status]);
-		asus_dump_sleep_count();
 	}
 
 	smblib_read(&chip_dev->chg, 0x4582, &val);
@@ -492,7 +465,6 @@ static int asus_print_all(void)
             cnt = 0;
         if(cnt%5 == 0) {
             cnt = 0;
-            ASUSEvtlog("INOV Triggered pmi_THERM_STS[4582]=0x%x, TEMP_RANGE_STS[1606]=0x%x\n",val, therm_sts);
         }
         cnt++;
     }
@@ -735,8 +707,6 @@ void asus_log_chg_mode(u8 apsd_result_bit)
     default:
         break;
     }
-
-    ASUSEvtlog("[USB] set_chg_mode:%s\n", usb_type_str[chg_type]);
 }
 
 #define SWITCH_QC_NOT_QUICK_CHARGING_10W	4
@@ -793,7 +763,7 @@ void asus_set_qc_stat(struct smb_charger *chg, union power_supply_propval *val)
                 else
                     set = SWITCH_QC_NOT_QUICK_CHARGING_10W;
             }
-                    
+
             extcon_set_state_sync_asus(&asus_chg->qc_stat_dev, set);
             break;
 
@@ -1508,7 +1478,7 @@ static ssize_t charger_limit_proc_write(struct file *filp, const char __user *bu
 		charger_limit_setting=10;
 	else if(charger_limit_setting>100)
 		charger_limit_setting=100;
-	
+
 	pr_info("[Charger]%s charger_limit_setting=%d charger_limit_enable=%d\n",__FUNCTION__,charger_limit_setting,charger_limit_enable);
 	if (charger_limit_enable)
 		charger_limit_update_work(0);
@@ -1726,7 +1696,7 @@ void asus_battery_charging_limit(struct work_struct *dat)
 
 	rc = vote(chip_dev->chg.chg_disable_votable, DEMO_APP_VOTER, !charger_flag, 0);
     //~ rc = smblib_write(&chip_dev->chg, CHARGING_ENABLE_CMD_REG, charger_flag ? 0 : 1);
-    
+
 	if(rc < 0)
 	{
 		pr_info("charger batt_suspend disable failed\n");
@@ -2157,7 +2127,7 @@ static int asus_do_soft_jeita(struct smb_charger *chg)
     case DCP_OTHERS_1A:
     case OTHERS_1A:
         if ((chg->asus_chg->dual_charge != TYPEC_3A)  &&
-            aicl_result < DCP_LIKE_AICL_RERUN_THRESH && 
+            aicl_result < DCP_LIKE_AICL_RERUN_THRESH &&
             !inov_triggered) {
             aicl_low = true;
             aicl_low_cnt++;
@@ -2191,13 +2161,11 @@ static int asus_do_soft_jeita(struct smb_charger *chg)
         }
     }
 
-    CHG_DBG("aicl_result = %d, inov_triggered = %d, aicl_low = %d, usb_100_wa = %d, aicl_low_cnt = %d, flt_chg_rerun_apsd = %d, flt_chg_chk_cnt = %d\n", 
+    CHG_DBG("aicl_result = %d, inov_triggered = %d, aicl_low = %d, usb_100_wa = %d, aicl_low_cnt = %d, flt_chg_rerun_apsd = %d, flt_chg_chk_cnt = %d\n",
         aicl_result, inov_triggered, aicl_low, usb_100_wa, aicl_low_cnt, flt_chg_rerun_apsd, chg->asus_chg->flt_chg_chk_cnt);
     if (aicl_done && aicl_low) {
-        ASUSEvtlog("aicl done & low, aicl_result=%d\n", aicl_result);
     }
     if (aicl_fail) {
-        ASUSEvtlog("aicl fail, aicl_stat=0x%02x\n", aicl_stat);
     }
 
     // re-run apsd when aicl fail
@@ -2579,7 +2547,7 @@ void asus_batt_temp_work(struct work_struct *work)
 		} else {
 			CHG_DBG("%s do soft jeita after 5s\n",__func__);
             cancel_delayed_work(&asus_chg->asus_batt_temp_work);
-			schedule_delayed_work(&asus_chg->asus_batt_temp_work, 
+			schedule_delayed_work(&asus_chg->asus_batt_temp_work,
                     msecs_to_jiffies(5000));
 		}
     } else {
@@ -2697,7 +2665,7 @@ set_current:
     } else {
         // TODO: BR/IN country code set icl to 2000mA
 		//this if-else is for BR country adapter, no id pin
-		if (((asus_chg->BR_countrycode_flag == COUNTRY_BR) || 
+		if (((asus_chg->BR_countrycode_flag == COUNTRY_BR) ||
 			(asus_chg->BR_countrycode_flag == COUNTRY_IN)) && (0 == asus_chg->asus_qc_flag)) {
 			CHG_DBG("change BR/IN to ASUS_2A \n");
 			asus_chg->asus_charging_type = DCP_2A_BR_IN;
@@ -2726,7 +2694,7 @@ set_current:
         typec_wa_flag = true;
 
 post_proc:
-    // Set HVDCP_PULSE_COUNT_MAX 
+    // Set HVDCP_PULSE_COUNT_MAX
 	rc = smblib_write(chg, HVDCP_PULSE_COUNT_MAX, 0x54);// change from 0x54 to 0x4C
 	if (rc < 0)
 		CHG_DBG_E("%s: Failed to set HVDCP_PULSE_COUNT_MAX\n", __func__);
@@ -2952,9 +2920,9 @@ void asus_charger_pre_config(struct smb_charger *chg)
         dev_err(chg->dev, "Couldn't set minimum system voltage rc=%d\n", rc);
     }
     // 13.hvdcp = force hvdcp 5V
-    
+
     // 14.hvdcp pulse count max = qc2_5v & qc3 pulse count = 0
-    
+
     // 15.config ICL_OVERRIDE_AFTER_APSD(sw control icl)
     rc = smblib_masked_write(chg, USBIN_LOAD_CFG_REG,
                 ICL_OVERRIDE_AFTER_APSD_BIT, ICL_OVERRIDE_AFTER_APSD_BIT);
@@ -3205,7 +3173,6 @@ void asus_handle_usb_removal(struct smb_charger *chg)
     int rc;
 
     CHG_DBG("triggered, usb removed\n");
-    ASUSEvtlog("[USB] set_chg_mode:%s\n", usb_type_str[0]);
 
     cancel_delayed_work(&chg->asus_chg->asus_handle_usb_insertion_work);
     cancel_delayed_work(&chg->asus_chg->asus_adapter_adc_normal_work);
@@ -3279,9 +3246,9 @@ void asus_handle_usb_removal(struct smb_charger *chg)
     if(adc_check_lock.active){
 		__pm_relax(&adc_check_lock);
     }
- 
+
      chg->asus_chg->last_icl_cfg = 0x14;
-   
+
     alarm_cancel(&jeita_alarm);
 }
 

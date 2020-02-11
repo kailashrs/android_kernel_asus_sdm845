@@ -2259,8 +2259,6 @@ void resume_console(void)
 		else if (desc->action && desc->action->name)
 			name = desc->action->name;
 
-		ASUSEvtlog("[PM] Suspended for %lld.%03lu secs\n", pwrcs_time_int, pwrcs_time_dec);
-
 		if((pm_wakeup_irq == 0 && gic_irq_cnt == 0) || pm_wakeup_irq != 0)
 		{
 			ASUSEvtlog("[PM] IRQs triggered:%d name=%s\n",pm_wakeup_irq,name);
