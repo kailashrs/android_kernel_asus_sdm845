@@ -22743,7 +22743,7 @@ static QDF_STATUS csr_process_roam_sync_callback(tpAniSirGlobal mac_ctx,
 		}
 
 		csr_roam_offload_scan(mac_ctx, session_id,
-				ROAM_SCAN_OFFLOAD_START,
+				ROAM_SCAN_OFFLOAD_UPDATE_CFG,
 				REASON_CONNECT);
 		return status;
 	default:
